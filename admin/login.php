@@ -39,7 +39,7 @@ if ($_POST && isset($_POST['login']) && empty($error_message)) {
             $db = new Database();
             $conn = $db->getConnection();
             
-            $stmt = $conn->prepare("SELECT * FROM admins WHERE username = ? AND status = 'active'");
+            $stmt = $conn->prepare("SELECT * FROM admins WHERE username = ? AND is_active = 1");
             $stmt->execute([$username]);
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -49,7 +49,7 @@ if ($_POST && isset($_POST['login']) && empty($error_message)) {
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_username'] = $admin['username'];
                 $_SESSION['admin_role'] = $admin['role'];
-                $_SESSION['admin_name'] = $admin['full_name'];
+                $_SESSION['admin_name'] = $admin['first_name'] . ' ' . $admin['last_name'];
                 
                 // Reset login attempts
                 unset($_SESSION['login_attempts']);
@@ -60,8 +60,12 @@ if ($_POST && isset($_POST['login']) && empty($error_message)) {
                 $stmt->execute([$admin['id']]);
                 
                 // Log successful login
-                $stmt = $conn->prepare("INSERT INTO activity_logs (admin_id, action, details, ip_address, created_at) VALUES (?, 'login', 'Successful login', ?, NOW())");
-                $stmt->execute([$admin['id'], $_SERVER['REMOTE_ADDR']]);
+                try {
+                    $stmt = $conn->prepare("INSERT INTO activity_logs (admin_id, action, details, ip_address, created_at) VALUES (?, 'login', 'Successful login', ?, NOW())");
+                    $stmt->execute([$admin['id'], $_SERVER['REMOTE_ADDR']]);
+                } catch (Exception $e) {
+                    // Continue if logging fails
+                }
                 
                 // Redirect to intended page or dashboard
                 $redirect_to = $_SESSION['redirect_after_login'] ?? 'index.php';
@@ -75,8 +79,12 @@ if ($_POST && isset($_POST['login']) && empty($error_message)) {
                 $_SESSION['last_attempt_time'] = time();
                 
                 // Log failed login attempt
-                $stmt = $conn->prepare("INSERT INTO activity_logs (admin_id, action, details, ip_address, created_at) VALUES (NULL, 'failed_login', ?, ?, NOW())");
-                $stmt->execute(["Failed login attempt for username: $username", $_SERVER['REMOTE_ADDR']]);
+                try {
+                    $stmt = $conn->prepare("INSERT INTO activity_logs (admin_id, action, details, ip_address, created_at) VALUES (NULL, 'failed_login', ?, ?, NOW())");
+                    $stmt->execute(["Failed login attempt for username: $username", $_SERVER['REMOTE_ADDR']]);
+                } catch (Exception $e) {
+                    // Continue if logging fails
+                }
                 
                 $error_message = "Invalid username or password.";
             }

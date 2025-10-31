@@ -6,83 +6,48 @@ require_once 'includes/functions.php';
 $page_title = "Our Services - AluMaster Aluminum System";
 $page_description = "Comprehensive aluminum and glass solutions including Alucobond cladding, curtain walls, spider glass, sliding doors, and more in Ghana.";
 
-// Get all services (in a real app, this would come from database)
-$services = [
-    [
-        'id' => 1,
-        'name' => 'Alucobond Cladding',
-        'slug' => 'alucobond-cladding',
-        'category' => 'Cladding & Walls',
-        'description' => 'Premium aluminum composite panels for modern facades and building exteriors.',
-        'image' => 'assets/images/services/alucobond-cladding.jpg'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Curtain Wall',
-        'slug' => 'curtain-wall',
-        'category' => 'Cladding & Walls',
-        'description' => 'Structural glazing systems for commercial buildings and high-rise structures.',
-        'image' => 'assets/images/services/curtain-wall.jpg'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Spider Glass',
-        'slug' => 'spider-glass',
-        'category' => 'Glass Systems',
-        'description' => 'Point-fixed glazing systems for stunning glass facades and architectural features.',
-        'image' => 'assets/images/services/spider-glass.jpg'
-    ],
-    [
-        'id' => 4,
-        'name' => 'Sliding Windows & Doors',
-        'slug' => 'sliding-windows-doors',
-        'category' => 'Doors & Windows',
-        'description' => 'High-performance sliding window and door systems for residential and commercial use.',
-        'image' => 'assets/images/services/sliding-doors.jpg'
-    ],
-    [
-        'id' => 5,
-        'name' => 'Frameless Door',
-        'slug' => 'frameless-door',
-        'category' => 'Doors & Windows',
-        'description' => 'Elegant glass door solutions for modern spaces and commercial entrances.',
-        'image' => 'assets/images/services/frameless-door.jpg'
-    ],
-    [
-        'id' => 6,
-        'name' => 'PVC Windows',
-        'slug' => 'pvc-windows',
-        'category' => 'Doors & Windows',
-        'description' => 'Energy-efficient PVC window systems for residential and commercial applications.',
-        'image' => 'assets/images/services/pvc-windows.jpg'
-    ],
-    [
-        'id' => 7,
-        'name' => 'Sun-breakers',
-        'slug' => 'sun-breakers',
-        'category' => 'Specialty Systems',
-        'description' => 'Solar shading solutions for climate control and energy efficiency.',
-        'image' => 'assets/images/services/sun-breakers.jpg'
-    ],
-    [
-        'id' => 8,
-        'name' => 'Stainless Steel Balustrades',
-        'slug' => 'steel-balustrades',
-        'category' => 'Specialty Systems',
-        'description' => 'Premium stainless steel railing systems for safety and aesthetic appeal.',
-        'image' => 'assets/images/services/steel-balustrades.jpg'
-    ]
-];
-
-// Get unique categories for filtering
-$categories = array_unique(array_column($services, 'category'));
-
-// Filter services if category is selected
-$selected_category = $_GET['category'] ?? '';
-if ($selected_category) {
-    $services = array_filter($services, function($service) use ($selected_category) {
-        return $service['category'] === $selected_category;
-    });
+// Get services from database
+try {
+    $db = new Database();
+    $conn = $db->getConnection();
+    
+    // Get selected category
+    $selected_category = $_GET['category'] ?? '';
+    
+    // Build query conditions
+    $conditions = ["s.status = 'published'"];
+    $params = [];
+    
+    if (!empty($selected_category)) {
+        $conditions[] = "sc.name = ?";
+        $params[] = $selected_category;
+    }
+    
+    $where_clause = implode(' AND ', $conditions);
+    
+    // Get services with categories
+    $sql = "SELECT s.id, s.name, s.slug, s.short_description as description, s.featured_image as image, sc.name as category 
+            FROM services s 
+            LEFT JOIN service_categories sc ON s.category_id = sc.id 
+            WHERE $where_clause 
+            ORDER BY s.sort_order ASC";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->execute($params);
+    $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Get all categories for filtering
+    $stmt = $conn->prepare("SELECT DISTINCT sc.name FROM service_categories sc 
+                           INNER JOIN services s ON sc.id = s.category_id 
+                           WHERE s.status = 'published' 
+                           ORDER BY sc.sort_order ASC");
+    $stmt->execute();
+    $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    
+} catch (Exception $e) {
+    $services = [];
+    $categories = [];
+    error_log("Error loading services: " . $e->getMessage());
 }
 
 include 'includes/header.php';

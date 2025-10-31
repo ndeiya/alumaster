@@ -9,7 +9,7 @@ try {
     $db = new Database();
     $conn = $db->getConnection();
     
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM admins WHERE status = 'active'");
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM admins WHERE is_active = 1");
     $stmt->execute();
     $admin_count = $stmt->fetchColumn();
     
@@ -26,7 +26,8 @@ $error_message = '';
 if ($_POST && isset($_POST['create_admin'])) {
     $username = sanitize_input($_POST['username'] ?? '');
     $email = sanitize_input($_POST['email'] ?? '');
-    $full_name = sanitize_input($_POST['full_name'] ?? '');
+    $first_name = sanitize_input($_POST['first_name'] ?? '');
+    $last_name = sanitize_input($_POST['last_name'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
@@ -41,8 +42,12 @@ if ($_POST && isset($_POST['create_admin'])) {
         $errors[] = "Valid email address is required.";
     }
     
-    if (empty($full_name)) {
-        $errors[] = "Full name is required.";
+    if (empty($first_name)) {
+        $errors[] = "First name is required.";
+    }
+    
+    if (empty($last_name)) {
+        $errors[] = "Last name is required.";
     }
     
     if (empty($password) || strlen($password) < 6) {
@@ -58,15 +63,13 @@ if ($_POST && isset($_POST['create_admin'])) {
             // Create admin user
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             
-            $stmt = $conn->prepare("INSERT INTO admins (username, email, full_name, password, role, status, created_at) VALUES (?, ?, ?, ?, 'super_admin', 'active', NOW())");
-            $stmt->execute([$username, $email, $full_name, $hashed_password]);
+            $stmt = $conn->prepare("INSERT INTO admins (username, email, first_name, last_name, password, role, is_active) VALUES (?, ?, ?, ?, ?, 'super_admin', 1)");
+            $stmt->execute([$username, $email, $first_name, $last_name, $hashed_password]);
             
             $success_message = "Admin user created successfully! You can now <a href='login.php'>login</a> with your credentials.";
             
-            // Log the setup
+            // Admin user created successfully
             $admin_id = $conn->lastInsertId();
-            $stmt = $conn->prepare("INSERT INTO activity_logs (admin_id, action, details, ip_address, created_at) VALUES (?, 'setup', 'Initial admin user created', ?, NOW())");
-            $stmt->execute([$admin_id, $_SERVER['REMOTE_ADDR']]);
             
         } catch (Exception $e) {
             $error_message = "Error creating admin user: " . $e->getMessage();
@@ -140,10 +143,17 @@ if ($_POST && isset($_POST['create_admin'])) {
                 </div>
 
                 <div class="form-group">
-                    <label for="full_name" class="form-label">Full Name</label>
-                    <input type="text" id="full_name" name="full_name" class="form-input" required 
-                           value="<?php echo htmlspecialchars($_POST['full_name'] ?? ''); ?>"
-                           placeholder="Administrator">
+                    <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" id="first_name" name="first_name" class="form-input" required 
+                           value="<?php echo htmlspecialchars($_POST['first_name'] ?? ''); ?>"
+                           placeholder="John">
+                </div>
+
+                <div class="form-group">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" id="last_name" name="last_name" class="form-input" required 
+                           value="<?php echo htmlspecialchars($_POST['last_name'] ?? ''); ?>"
+                           placeholder="Doe">
                 </div>
 
                 <div class="form-group">

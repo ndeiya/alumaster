@@ -24,28 +24,18 @@ try {
     $stmt->execute();
     $total_services = $stmt->fetchColumn();
     
-    // Unread inquiries
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM inquiries WHERE status = 'unread'");
-    $stmt->execute();
-    $unread_inquiries = $stmt->fetchColumn();
-    
-    // Total inquiries this month
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM inquiries WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())");
-    $stmt->execute();
-    $monthly_inquiries = $stmt->fetchColumn();
+    // Placeholder for inquiries (table doesn't exist yet)
+    $unread_inquiries = 0;
+    $monthly_inquiries = 0;
+    $recent_inquiries = [];
     
     // Total admin users
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM admins WHERE status = 'active'");
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM admins WHERE is_active = 1");
     $stmt->execute();
     $total_admins = $stmt->fetchColumn();
     
-    // Recent inquiries
-    $stmt = $conn->prepare("SELECT * FROM inquiries ORDER BY created_at DESC LIMIT 5");
-    $stmt->execute();
-    $recent_inquiries = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
     // Recent activity logs
-    $stmt = $conn->prepare("SELECT al.*, a.full_name as admin_name FROM activity_logs al 
+    $stmt = $conn->prepare("SELECT al.*, CONCAT(a.first_name, ' ', a.last_name) as admin_name FROM activity_logs al 
                            LEFT JOIN admins a ON al.admin_id = a.id 
                            ORDER BY al.created_at DESC LIMIT 10");
     $stmt->execute();

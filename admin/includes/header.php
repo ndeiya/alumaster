@@ -4,9 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title ?? 'Admin Dashboard'; ?> - AluMaster Admin</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/admin.css">
-    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <?php
+    // Calculate relative path based on current file location
+    $script_path = $_SERVER['SCRIPT_NAME'];
+    $admin_pos = strpos($script_path, '/admin/');
+    if ($admin_pos !== false) {
+        $after_admin = substr($script_path, $admin_pos + 7); // +7 for '/admin/'
+        $depth = substr_count($after_admin, '/');
+        $base_path = str_repeat('../', $depth);
+    } else {
+        $base_path = '';
+    }
+    ?>
+    <link rel="stylesheet" href="<?php echo $base_path; ?>../assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/admin.css">
+    <link rel="icon" type="image/x-icon" href="<?php echo $base_path; ?>../assets/images/favicon.ico">
 </head>
 <body class="admin-body">
     <div class="admin-layout">
@@ -14,7 +26,7 @@
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <img src="../assets/images/logo.png" alt="AluMaster" class="sidebar-logo-image">
+                    <img src="<?php echo $base_path; ?>../assets/images/Alumaster-logo.png" alt="AluMaster" class="sidebar-logo-image">
                     <span class="sidebar-logo-text">AluMaster</span>
                 </div>
                 <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
@@ -27,7 +39,7 @@
             <nav class="sidebar-nav">
                 <ul class="nav-menu">
                     <li class="nav-item">
-                        <a href="index.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : ''; ?>">
+                        <a href="<?php echo $base_path; ?>index.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : ''; ?>">
                             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v3H8V5z"></path>
@@ -47,9 +59,9 @@
                             </svg>
                         </a>
                         <ul class="nav-dropdown-menu">
-                            <li><a href="services/list.php" class="nav-dropdown-link">All Services</a></li>
-                            <li><a href="services/add.php" class="nav-dropdown-link">Add Service</a></li>
-                            <li><a href="services/categories.php" class="nav-dropdown-link">Categories</a></li>
+                            <li><a href="<?php echo $base_path; ?>services/list.php" class="nav-dropdown-link">All Services</a></li>
+                            <li><a href="<?php echo $base_path; ?>services/add.php" class="nav-dropdown-link">Add Service</a></li>
+                            <li><a href="<?php echo $base_path; ?>services/categories.php" class="nav-dropdown-link">Categories</a></li>
                         </ul>
                     </li>
 
@@ -64,13 +76,13 @@
                             </svg>
                         </a>
                         <ul class="nav-dropdown-menu">
-                            <li><a href="pages/homepage.php" class="nav-dropdown-link">Homepage</a></li>
-                            <li><a href="pages/about.php" class="nav-dropdown-link">About Page</a></li>
+                            <li><a href="<?php echo $base_path; ?>pages/homepage.php" class="nav-dropdown-link">Homepage</a></li>
+                            <li><a href="<?php echo $base_path; ?>pages/about.php" class="nav-dropdown-link">About Page</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item">
-                        <a href="media/library.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/media/') !== false ? 'active' : ''; ?>">
+                        <a href="<?php echo $base_path; ?>media/library.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/media/') !== false ? 'active' : ''; ?>">
                             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
@@ -89,13 +101,13 @@
                             </svg>
                         </a>
                         <ul class="nav-dropdown-menu">
-                            <li><a href="navigation/menu.php" class="nav-dropdown-link">Header Menu</a></li>
-                            <li><a href="navigation/footer.php" class="nav-dropdown-link">Footer Links</a></li>
+                            <li><a href="<?php echo $base_path; ?>navigation/menu.php" class="nav-dropdown-link">Header Menu</a></li>
+                            <li><a href="<?php echo $base_path; ?>navigation/footer.php" class="nav-dropdown-link">Footer Links</a></li>
                         </ul>
                     </li>
 
                     <li class="nav-item">
-                        <a href="inquiries/list.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/inquiries/') !== false ? 'active' : ''; ?>">
+                        <a href="<?php echo $base_path; ?>inquiries/list.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/inquiries/') !== false ? 'active' : ''; ?>">
                             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
@@ -130,10 +142,10 @@
                             </svg>
                         </a>
                         <ul class="nav-dropdown-menu">
-                            <li><a href="settings/general.php" class="nav-dropdown-link">General Settings</a></li>
-                            <li><a href="settings/seo.php" class="nav-dropdown-link">SEO Settings</a></li>
+                            <li><a href="<?php echo $base_path; ?>settings/general.php" class="nav-dropdown-link">General Settings</a></li>
+                            <li><a href="<?php echo $base_path; ?>settings/seo.php" class="nav-dropdown-link">SEO Settings</a></li>
                             <?php if (check_admin_permission('admin')): ?>
-                            <li><a href="settings/users.php" class="nav-dropdown-link">Admin Users</a></li>
+                            <li><a href="<?php echo $base_path; ?>settings/users.php" class="nav-dropdown-link">Admin Users</a></li>
                             <?php endif; ?>
                         </ul>
                     </li>
@@ -158,13 +170,13 @@
                             </svg>
                         </button>
                         <div class="sidebar-user-menu">
-                            <a href="../index.php" target="_blank" class="sidebar-user-menu-item">
+                            <a href="<?php echo $base_path; ?>../index.php" target="_blank" class="sidebar-user-menu-item">
                                 <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                 </svg>
                                 View Website
                             </a>
-                            <a href="logout.php" class="sidebar-user-menu-item">
+                            <a href="<?php echo $base_path; ?>logout.php" class="sidebar-user-menu-item">
                                 <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                                 </svg>
@@ -206,7 +218,7 @@
                 </div>
                 <div class="topbar-right">
                     <div class="topbar-actions">
-                        <a href="../index.php" target="_blank" class="topbar-action" title="View Website">
+                        <a href="<?php echo $base_path; ?>../index.php" target="_blank" class="topbar-action" title="View Website">
                             <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                             </svg>

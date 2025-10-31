@@ -33,8 +33,19 @@
         </div>
     </div>
 
-    <script src="../assets/js/main.js"></script>
-    <script src="assets/js/admin.js"></script>
+    <?php
+    // Use the same base path calculation as in header
+    $script_path = $_SERVER['SCRIPT_NAME'];
+    $admin_pos = strpos($script_path, '/admin/');
+    if ($admin_pos !== false) {
+        $after_admin = substr($script_path, $admin_pos + 7);
+        $depth = substr_count($after_admin, '/');
+        $base_path = str_repeat('../', $depth);
+    } else {
+        $base_path = '';
+    }
+    ?>
+    <script src="<?php echo $base_path; ?>assets/js/admin-simple.js"></script>
     <script>
         // Initialize admin interface
         document.addEventListener('DOMContentLoaded', function() {
@@ -63,15 +74,7 @@
                 sidebar.classList.add('collapsed');
             }
             
-            // Dropdown menu functionality
-            const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
-            dropdownToggles.forEach(toggle => {
-                toggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const dropdown = this.parentElement;
-                    dropdown.classList.toggle('open');
-                });
-            });
+            // Dropdown functionality is handled by admin.js
             
             // User dropdown functionality
             const userToggle = document.querySelector('.sidebar-user-toggle');

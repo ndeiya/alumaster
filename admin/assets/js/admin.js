@@ -1,32 +1,70 @@
-// Admin Panel JavaScript
+// Admin Panel JavaScript - Simplified Working Version
 
-// Initialize admin functionality when DOM is loaded
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    initializeAdminInterface();
-});
-
-function initializeAdminInterface() {
+    console.log('Admin JS: DOM loaded, initializing...');
+    
+    // Initialize dropdowns
+    initializeDropdowns();
+    
     // Initialize sidebar
     initializeSidebar();
     
-    // Initialize table functionality
-    initializeTableSelection();
+    console.log('Admin JS: Initialization complete');
+});
+
+// Dropdown functionality - simplified and working
+function initializeDropdowns() {
+    const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
+    console.log('Admin JS: Found dropdown toggles:', dropdownToggles.length);
     
-    // Initialize form enhancements
-    initializeFormEnhancements();
+    dropdownToggles.forEach((toggle, index) => {
+        console.log(`Admin JS: Setting up dropdown ${index + 1}`);
+        
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Admin JS: Dropdown clicked');
+            
+            const dropdown = this.parentElement;
+            const wasOpen = dropdown.classList.contains('open');
+            
+            // Close all dropdowns first
+            document.querySelectorAll('.nav-dropdown.open').forEach(openDropdown => {
+                openDropdown.classList.remove('open');
+            });
+            
+            // Toggle current dropdown
+            if (!wasOpen) {
+                dropdown.classList.add('open');
+                console.log('Admin JS: Dropdown opened');
+            } else {
+                console.log('Admin JS: Dropdown closed');
+            }
+        });
+    });
     
-    // Initialize tooltips
-    initializeTooltips();
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-dropdown')) {
+            const openDropdowns = document.querySelectorAll('.nav-dropdown.open');
+            if (openDropdowns.length > 0) {
+                openDropdowns.forEach(dropdown => dropdown.classList.remove('open'));
+                console.log('Admin JS: Closed dropdowns by clicking outside');
+            }
+        }
+    });
 }
 
-// Sidebar functionality
+// Basic sidebar functionality
 function initializeSidebar() {
     const sidebar = document.getElementById('adminSidebar');
     const sidebarToggle = document.getElementById('sidebarToggle');
     const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
     
     // Desktop sidebar toggle
-    if (sidebarToggle) {
+    if (sidebarToggle && sidebar) {
         sidebarToggle.addEventListener('click', function() {
             sidebar.classList.toggle('collapsed');
             localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
@@ -34,58 +72,16 @@ function initializeSidebar() {
     }
     
     // Mobile sidebar toggle
-    if (mobileSidebarToggle) {
+    if (mobileSidebarToggle && sidebar) {
         mobileSidebarToggle.addEventListener('click', function() {
             sidebar.classList.toggle('mobile-open');
         });
     }
     
     // Restore sidebar state
-    if (localStorage.getItem('sidebarCollapsed') === 'true') {
+    if (sidebar && localStorage.getItem('sidebarCollapsed') === 'true') {
         sidebar.classList.add('collapsed');
     }
-    
-    // Dropdown menus
-    const dropdownToggles = document.querySelectorAll('.nav-dropdown-toggle');
-    dropdownToggles.forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            const dropdown = this.parentElement;
-            dropdown.classList.toggle('open');
-            
-            // Close other dropdowns
-            dropdownToggles.forEach(otherToggle => {
-                if (otherToggle !== toggle) {
-                    otherToggle.parentElement.classList.remove('open');
-                }
-            });
-        });
-    });
-    
-    // User dropdown
-    const userToggle = document.querySelector('.sidebar-user-toggle');
-    const userMenu = document.querySelector('.sidebar-user-menu');
-    
-    if (userToggle && userMenu) {
-        userToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            userMenu.classList.toggle('show');
-        });
-        
-        // Close user menu when clicking outside
-        document.addEventListener('click', function() {
-            userMenu.classList.remove('show');
-        });
-    }
-    
-    // Close mobile sidebar when clicking outside
-    document.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768 && 
-            !sidebar.contains(e.target) && 
-            !mobileSidebarToggle.contains(e.target)) {
-            sidebar.classList.remove('mobile-open');
-        }
-    });
 }
 
 // Table selection functionality

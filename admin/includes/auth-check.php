@@ -47,17 +47,7 @@ function check_admin_permission($required_role = 'editor') {
     return $user_level >= $required_level;
 }
 
-// CSRF token generation and validation
-function generate_csrf_token() {
-    if (!isset($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-    return $_SESSION['csrf_token'];
-}
-
-function validate_csrf_token($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
-}
+// CSRF token functions are available from includes/functions.php
 
 // Activity logging function
 function log_admin_activity($action, $details = '', $target_id = null) {

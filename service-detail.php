@@ -11,201 +11,37 @@ if (empty($service_slug)) {
     exit;
 }
 
-// Static service data (works without database)
-$services_data = [
-    'alucobond-cladding' => [
-        'name' => 'Alucobond Cladding',
-        'category' => 'Cladding & Walls',
-        'short_description' => 'Premium aluminum composite panels for modern facades',
-        'description' => 'Alucobond cladding represents the pinnacle of modern architectural design, offering unparalleled versatility and aesthetic appeal for contemporary building facades. Our premium aluminum composite panels combine durability with stunning visual impact.',
-        'features' => [
-            'Weather-resistant aluminum composite construction',
-            'Wide range of colors and finishes available',
-            'Lightweight yet incredibly strong',
-            'Fire-resistant properties for safety',
-            'Low maintenance requirements',
-            'Excellent thermal insulation properties'
-        ],
-        'applications' => 'Perfect for commercial buildings, residential complexes, shopping centers, and office buildings. Our Alucobond cladding systems provide both functional protection and striking visual appeal.',
-        'specifications' => [
-            'Material' => 'Aluminum Composite Panel',
-            'Thickness' => '3mm, 4mm, 6mm',
-            'Standard Size' => '1220mm x 2440mm',
-            'Fire Rating' => 'Class A2-s1,d0',
-            'Warranty' => '15 years',
-            'Colors' => '200+ standard colors'
-        ],
-        'images' => [
-            'assets/images/services/alucobond-1.jpg',
-            'assets/images/services/alucobond-2.jpg',
-            'assets/images/services/alucobond-3.jpg'
-        ]
-    ],
-    'curtain-wall' => [
-        'name' => 'Curtain Wall',
-        'category' => 'Cladding & Walls',
-        'short_description' => 'Structural glazing systems for commercial buildings',
-        'description' => 'Our curtain wall systems provide the perfect solution for modern commercial and high-rise buildings, offering structural integrity combined with stunning glass facades that maximize natural light and energy efficiency.',
-        'features' => [
-            'Structural glazing technology',
-            'Maximum natural light penetration',
-            'Energy-efficient thermal performance',
-            'Wind and seismic resistance',
-            'Customizable design options',
-            'Professional installation service'
-        ],
-        'applications' => 'Ideal for office buildings, shopping centers, hotels, and high-rise residential complexes where maximum natural light and modern aesthetics are desired.',
-        'specifications' => [
-            'System Type' => 'Structural Glazing',
-            'Glass Thickness' => '6mm - 24mm',
-            'Frame Material' => 'Aluminum Alloy',
-            'Wind Load' => 'Up to 3.0 kPa',
-            'Thermal Performance' => 'U-value: 1.2 W/m²K',
-            'Water Resistance' => 'Class E1200'
-        ]
-    ],
-    'spider-glass' => [
-        'name' => 'Spider Glass',
-        'category' => 'Glass Systems',
-        'short_description' => 'Point-fixed glazing for stunning glass facades',
-        'description' => 'Spider glass systems create breathtaking architectural features with minimal visual obstruction. Our point-fixed glazing technology allows for maximum transparency while maintaining structural integrity and weather resistance.',
-        'features' => [
-            'Point-fixed glazing system',
-            'Minimal visual obstruction',
-            'Maximum transparency',
-            'Structural integrity maintained',
-            'Weather-resistant design',
-            'Customizable configurations'
-        ],
-        'applications' => 'Perfect for atriums, entrance lobbies, showrooms, and architectural features where maximum visual impact and transparency are required.',
-        'specifications' => [
-            'Glass Type' => 'Tempered/Laminated',
-            'Thickness' => '10mm - 19mm',
-            'Fixing Points' => 'Stainless Steel Spiders',
-            'Maximum Panel Size' => '3000mm x 2000mm',
-            'Load Capacity' => 'Up to 2.5 kN per point',
-            'Sealant' => 'Structural Glazing Grade'
-        ]
-    ],
-    'sliding-windows-doors' => [
-        'name' => 'Sliding Windows & Doors',
-        'category' => 'Doors & Windows',
-        'short_description' => 'High-performance sliding systems',
-        'description' => 'Our premium sliding window and door systems combine smooth operation with excellent thermal and acoustic performance. Perfect for modern homes and commercial spaces requiring large openings and seamless indoor-outdoor connectivity.',
-        'features' => [
-            'Smooth sliding operation',
-            'Excellent thermal performance',
-            'Sound insulation properties',
-            'Large opening capabilities',
-            'Durable hardware systems',
-            'Multiple configuration options'
-        ],
-        'applications' => 'Residential homes, apartments, offices, restaurants, and any space requiring large openings with smooth operation.',
-        'specifications' => [
-            'Profile System' => 'Multi-chamber aluminum',
-            'Glass Options' => 'Single/Double/Triple glazed',
-            'Maximum Width' => '6000mm',
-            'Maximum Height' => '3000mm',
-            'Thermal Break' => 'Yes (Polyamide)',
-            'Hardware' => 'German engineering'
-        ]
-    ],
-    'frameless-door' => [
-        'name' => 'Frameless Door',
-        'category' => 'Doors & Windows',
-        'short_description' => 'Elegant glass door solutions',
-        'description' => 'Our frameless glass doors provide the ultimate in modern elegance and functionality. These systems offer unobstructed views while maintaining security and weather resistance for both interior and exterior applications.',
-        'features' => [
-            'Completely frameless design',
-            'Unobstructed views',
-            'Modern elegant appearance',
-            'Security features included',
-            'Weather-resistant sealing',
-            'Smooth operation mechanisms'
-        ],
-        'applications' => 'Office entrances, retail stores, hotels, residential entrances, and interior partitions where modern aesthetics are paramount.',
-        'specifications' => [
-            'Glass Type' => 'Tempered Safety Glass',
-            'Thickness' => '12mm - 19mm',
-            'Maximum Size' => '2500mm x 3000mm',
-            'Hardware' => 'Stainless Steel 316',
-            'Locking System' => 'Multi-point locking',
-            'Sealing' => 'EPDM weather seals'
-        ]
-    ],
-    'pvc-windows' => [
-        'name' => 'PVC Windows',
-        'category' => 'Doors & Windows',
-        'short_description' => 'Energy-efficient PVC window systems',
-        'description' => 'Our PVC window systems offer exceptional energy efficiency, durability, and low maintenance requirements. These windows provide excellent thermal and acoustic insulation while maintaining attractive aesthetics.',
-        'features' => [
-            'Superior energy efficiency',
-            'Low maintenance requirements',
-            'Excellent insulation properties',
-            'Durable construction',
-            'Multiple color options',
-            'Cost-effective solution'
-        ],
-        'applications' => 'Residential buildings, schools, hospitals, and commercial buildings where energy efficiency and cost-effectiveness are priorities.',
-        'specifications' => [
-            'Profile System' => 'Multi-chamber PVC',
-            'Glazing' => 'Double/Triple glazed',
-            'U-Value' => '1.1 W/m²K',
-            'Air Permeability' => 'Class 4',
-            'Water Tightness' => 'Class 9A',
-            'Wind Load' => 'Class C5'
-        ]
-    ],
-    'sun-breakers' => [
-        'name' => 'Sun-breakers',
-        'category' => 'Specialty Systems',
-        'short_description' => 'Solar shading solutions for climate control',
-        'description' => 'Our sun-breaker systems provide effective solar control while maintaining architectural aesthetics. These systems reduce cooling costs, prevent glare, and protect interior furnishings from UV damage.',
-        'features' => [
-            'Effective solar control',
-            'Reduced cooling costs',
-            'Glare prevention',
-            'UV protection',
-            'Architectural integration',
-            'Automated control options'
-        ],
-        'applications' => 'Office buildings, schools, hospitals, residential buildings, and any structure requiring solar control and energy efficiency.',
-        'specifications' => [
-            'Material' => 'Aluminum Louvers',
-            'Blade Width' => '100mm - 300mm',
-            'Control System' => 'Manual/Motorized',
-            'Finish Options' => 'Powder coated/Anodized',
-            'Wind Resistance' => 'Up to 150 km/h',
-            'Solar Control' => 'Up to 90% reduction'
-        ]
-    ],
-    'steel-balustrades' => [
-        'name' => 'Stainless Steel Balustrades',
-        'category' => 'Specialty Systems',
-        'short_description' => 'Premium stainless steel railing systems',
-        'description' => 'Our stainless steel balustrade systems combine safety, durability, and modern aesthetics. These systems are perfect for both interior and exterior applications, offering corrosion resistance and minimal maintenance.',
-        'features' => [
-            'Corrosion-resistant materials',
-            'Modern aesthetic appeal',
-            'Minimal maintenance required',
-            'Safety compliance',
-            'Durable construction',
-            'Customizable designs'
-        ],
-        'applications' => 'Staircases, balconies, terraces, walkways, and any area requiring safety barriers with modern aesthetics.',
-        'specifications' => [
-            'Material Grade' => 'Stainless Steel 316',
-            'Handrail Diameter' => '42mm - 50mm',
-            'Post Spacing' => 'Maximum 1500mm',
-            'Glass Thickness' => '12mm - 17mm (if applicable)',
-            'Height Options' => '1000mm - 1200mm',
-            'Finish' => 'Brushed/Polished'
-        ]
-    ]
-];
-
-// Get service data
-$service = $services_data[$service_slug] ?? null;
+// Get service data from database
+$service = null;
+try {
+    $db = new Database();
+    $conn = $db->getConnection();
+    
+    $stmt = $conn->prepare("SELECT s.*, sc.name as category_name 
+                           FROM services s 
+                           LEFT JOIN service_categories sc ON s.category_id = sc.id 
+                           WHERE s.slug = ? AND s.status = 'published'");
+    $stmt->execute([$service_slug]);
+    $service_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($service_data) {
+        // Map database fields to expected format
+        $service = [
+            'name' => $service_data['name'],
+            'category' => $service_data['category_name'],
+            'short_description' => $service_data['short_description'],
+            'description' => $service_data['description'],
+            'featured_image' => $service_data['featured_image']
+        ];
+        
+        // Update view count
+        $stmt = $conn->prepare("UPDATE services SET views = views + 1 WHERE id = ?");
+        $stmt->execute([$service_data['id']]);
+    }
+    
+} catch (Exception $e) {
+    error_log("Error loading service: " . $e->getMessage());
+}
 
 if (!$service) {
     header('Location: services.php');
@@ -269,7 +105,7 @@ include 'includes/header.php';
                     </div>
                 </div>
                 <div class="hero-image">
-                    <img src="assets/images/services/<?php echo $service_slug; ?>-hero.jpg" 
+                    <img src="<?php echo htmlspecialchars($service['featured_image'] ?? 'assets/images/service-placeholder.jpg'); ?>" 
                          alt="<?php echo htmlspecialchars($service['name']); ?>" 
                          onerror="this.src='assets/images/service-placeholder.jpg'">
                 </div>
