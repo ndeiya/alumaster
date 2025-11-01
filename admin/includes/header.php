@@ -65,6 +65,17 @@
                         </ul>
                     </li>
 
+
+
+                    <li class="nav-item">
+                        <a href="<?php echo $base_path; ?>media/library.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/media/') !== false ? 'active' : ''; ?>">
+                            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="nav-text">Media Library</span>
+                        </a>
+                    </li>
+
                     <li class="nav-item nav-dropdown">
                         <a href="#" class="nav-link nav-dropdown-toggle <?php echo strpos($_SERVER['PHP_SELF'], '/pages/') !== false ? 'active' : ''; ?>">
                             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,16 +89,10 @@
                         <ul class="nav-dropdown-menu">
                             <li><a href="<?php echo $base_path; ?>pages/homepage.php" class="nav-dropdown-link">Homepage</a></li>
                             <li><a href="<?php echo $base_path; ?>pages/about.php" class="nav-dropdown-link">About Page</a></li>
+                            <li><a href="<?php echo $base_path; ?>pages/contact.php" class="nav-dropdown-link">Contact Page</a></li>
+                            <li><a href="<?php echo $base_path; ?>pages/list.php" class="nav-dropdown-link">All Pages</a></li>
+                            <li><a href="<?php echo $base_path; ?>pages/add.php" class="nav-dropdown-link">Add Page</a></li>
                         </ul>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="<?php echo $base_path; ?>media/library.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], '/media/') !== false ? 'active' : ''; ?>">
-                            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <span class="nav-text">Media Library</span>
-                        </a>
                     </li>
 
                     <li class="nav-item nav-dropdown">
@@ -101,8 +106,8 @@
                             </svg>
                         </a>
                         <ul class="nav-dropdown-menu">
-                            <li><a href="<?php echo $base_path; ?>navigation/menu.php" class="nav-dropdown-link">Header Menu</a></li>
-                            <li><a href="<?php echo $base_path; ?>navigation/footer.php" class="nav-dropdown-link">Footer Links</a></li>
+                            <li><a href="<?php echo $base_path; ?>navigation/list.php" class="nav-dropdown-link">All Menus</a></li>
+                            <li><a href="<?php echo $base_path; ?>navigation/add.php" class="nav-dropdown-link">Add Menu</a></li>
                         </ul>
                     </li>
 

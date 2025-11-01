@@ -73,6 +73,11 @@ RewriteRule ^service/([a-zA-Z0-9-]+)/?$ service-detail.php?service=$1 [L,QSA]
 # Clean URLs for services with category filter
 RewriteRule ^services/([a-zA-Z0-9-]+)/?$ services.php?category=$1 [L,QSA]
 
+# Clean URLs for dynamic pages
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9-]+)/?$ page.php?slug=$1 [L,QSA]
+
 # Redirect common variations
 RewriteRule ^home/?$ index.php [L,R=301]
 RewriteRule ^about-us/?$ about.php [L,R=301]

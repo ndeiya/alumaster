@@ -12,6 +12,11 @@ $breadcrumb = [
     ['title' => 'All Services']
 ];
 
+// Handle success message from URL
+if (isset($_GET['success'])) {
+    $success_message = sanitize_input($_GET['success']);
+}
+
 // Handle bulk actions
 if ($_POST && isset($_POST['bulk_action']) && isset($_POST['selected_items'])) {
     if (!validate_csrf_token($_POST['csrf_token'])) {

@@ -46,6 +46,7 @@
     }
     ?>
     <script src="<?php echo $base_path; ?>assets/js/admin-simple.js"></script>
+    <script src="<?php echo $base_path; ?>assets/js/editor.js"></script>
     <script>
         // Initialize admin interface
         document.addEventListener('DOMContentLoaded', function() {

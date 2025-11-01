@@ -56,7 +56,7 @@
     }
     </script>
 </head>
-<body>
+<body<?php echo isset($body_class) ? ' class="' . htmlspecialchars($body_class) . '"' : ''; ?>>
     <!-- Header -->
     <header class="header">
         <div class="container">
@@ -73,10 +73,31 @@
                             </svg>
                         </button>
                     </li>
-                    <li><a href="index.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : ''; ?>">Home</a></li>
-                    <li><a href="services.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'services.php' || basename($_SERVER['PHP_SELF']) === 'service-detail.php' ? 'active' : ''; ?>">Services</a></li>
-                    <li><a href="about.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'about.php' ? 'active' : ''; ?>">About</a></li>
-                    <li><a href="contact.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'contact.php' ? 'active' : ''; ?>">Contact</a></li>
+                    <?php
+                    // Get navigation items from database
+                    $nav_items = get_navigation_menu('header');
+                    
+                    // Fallback to default navigation if no items found
+                    if (empty($nav_items)) {
+                        $nav_items = [
+                            ['title' => 'Home', 'url' => 'index.php', 'target' => '_self'],
+                            ['title' => 'Services', 'url' => 'services.php', 'target' => '_self'],
+                            ['title' => 'About', 'url' => 'about.php', 'target' => '_self'],
+                            ['title' => 'Contact', 'url' => 'contact.php', 'target' => '_self']
+                        ];
+                    }
+                    
+                    foreach ($nav_items as $item):
+                        $is_active = is_nav_item_active($item);
+                        $target = $item['target'] === '_blank' ? ' target="_blank" rel="noopener"' : '';
+                    ?>
+                    <li>
+                        <a href="<?php echo htmlspecialchars($item['url']); ?>" 
+                           class="nav-link <?php echo $is_active ? 'active' : ''; ?>"<?php echo $target; ?>>
+                            <?php echo htmlspecialchars($item['title']); ?>
+                        </a>
+                    </li>
+                    <?php endforeach; ?>
                 </ul>
                 
                 <a href="contact.php" class="navbar-cta">Get Quote</a>
