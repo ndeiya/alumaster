@@ -256,9 +256,9 @@ body {
 }
 
 .brand-logo {
-    height: 40px;
+    height: 60px;
     width: auto;
-    max-width: 200px;
+    max-width: 250px;
     object-fit: contain;
 }
 
@@ -4582,8 +4582,20 @@ body.contact-page .form-label {
     display: block !important;
     font-size: 0.875rem !important;
     font-weight: 600 !important;
-    color: #ffffff !important;
+    color: #2d3748 !important;
     margin-bottom: 0.5rem !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Ensure contact form labels are always visible on white background */
+.contact-form-card .form-label,
+.contact-form-clean .form-label {
+    color: #2d3748 !important;
+    font-weight: 600 !important;
+    display: block !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 0.875rem !important;
 }
 
 body.contact-page .form-input,

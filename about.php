@@ -250,47 +250,7 @@ include 'includes/header.php';
         </div>
     </section>
 
-    <!-- Our Team Section -->
-    <section class="section section-white">
-        <div class="container">
-            <div class="section-header text-center">
-                <h2 class="section-title">Our Team</h2>
-                <p class="section-description">Meet the experts behind our success</p>
-            </div>
-            
-            <div class="team-grid">
-                <div class="team-card">
-                    <div class="team-image">
-                        <img src="assets/images/team-member-1.jpg" alt="John Mensah" class="team-img">
-                    </div>
-                    <div class="team-info">
-                        <h3 class="team-name">John Mensah</h3>
-                        <p class="team-role">Managing Director</p>
-                    </div>
-                </div>
 
-                <div class="team-card">
-                    <div class="team-image">
-                        <img src="assets/images/team-member-2.jpg" alt="Sarah Osei" class="team-img">
-                    </div>
-                    <div class="team-info">
-                        <h3 class="team-name">Sarah Osei</h3>
-                        <p class="team-role">Project Manager</p>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <div class="team-image">
-                        <img src="assets/images/team-member-3.jpg" alt="Michael Asante" class="team-img">
-                    </div>
-                    <div class="team-info">
-                        <h3 class="team-name">Michael Asante</h3>
-                        <p class="team-role">Technical Director</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- CTA Section -->
     <section class="section about-cta-section">

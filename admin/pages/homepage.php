@@ -1,8 +1,16 @@
 <?php
-require_once '../includes/auth-check.php';
+session_start();
+require_once '../../includes/config.php';
 require_once '../../includes/database.php';
+require_once '../../includes/functions.php';
+require_once '../includes/auth-check.php';
 
-$page_title = "Homepage Management";
+$page_title = 'Homepage Management';
+$breadcrumb = [
+    ['title' => 'Dashboard', 'url' => '../index.php'],
+    ['title' => 'Pages', 'url' => '#'],
+    ['title' => 'Homepage']
+];
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,6 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($section_key && $content) {
         try {
+            $db = new Database();
+            $pdo = $db->getConnection();
+            
             $stmt = $pdo->prepare("UPDATE homepage_sections SET content = ?, settings = ?, is_active = ? WHERE section_key = ?");
             $stmt->execute([$content, $settings, $is_active, $section_key]);
             
@@ -38,8 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$success_message = '';
+$error_message = '';
+
 // Get all homepage sections
 try {
+    $db = new Database();
+    $pdo = $db->getConnection();
+    
     $stmt = $pdo->query("SELECT * FROM homepage_sections ORDER BY sort_order ASC");
     $sections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {

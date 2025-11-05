@@ -148,6 +148,7 @@
                         </a>
                         <ul class="nav-dropdown-menu">
                             <li><a href="<?php echo $base_path; ?>settings/general.php" class="nav-dropdown-link">General Settings</a></li>
+                            <li><a href="<?php echo $base_path; ?>settings/email.php" class="nav-dropdown-link">Email Settings</a></li>
                             <li><a href="<?php echo $base_path; ?>settings/seo.php" class="nav-dropdown-link">SEO Settings</a></li>
                             <?php if (check_admin_permission('admin')): ?>
                             <li><a href="<?php echo $base_path; ?>settings/users.php" class="nav-dropdown-link">Admin Users</a></li>
@@ -175,6 +176,12 @@
                             </svg>
                         </button>
                         <div class="sidebar-user-menu">
+                            <a href="<?php echo $base_path; ?>settings/profile.php" class="sidebar-user-menu-item">
+                                <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                My Profile
+                            </a>
                             <a href="<?php echo $base_path; ?>../index.php" target="_blank" class="sidebar-user-menu-item">
                                 <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>

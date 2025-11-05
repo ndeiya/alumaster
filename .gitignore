@@ -1,0 +1,117 @@
+# AluMaster Website - Git Ignore File
+
+# Environment Configuration
+.env
+.env.local
+.env.production
+.env.staging
+
+# Email System
+logs/email.log
+logs/*.log
+
+# Composer Dependencies
+vendor/
+composer.lock
+
+# Node.js Dependencies (if using)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database Backups & Dumps
+*.sql.backup
+*.sql.gz
+database/backups/
+database/dumps/
+
+# File Uploads & Media
+uploads/
+media/uploads/
+assets/uploads/
+temp/
+tmp/
+
+# Cache Files
+cache/
+*.cache
+.cache/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# System Files
+*.log
+*.tmp
+*.temp
+.htaccess.backup
+.htpasswd
+
+# PHP Specific
+*.php.bak
+*.php~
+
+# Configuration Backups
+config.php.backup
+includes/config.php.backup
+
+# Admin Session Files
+admin/sessions/
+sessions/
+
+# Error Logs
+error_log
+error.log
+php_errors.log
+
+# Backup Files
+*.backup
+*.bak
+*_backup
+backup/
+backups/
+
+# Development Files
+test.php
+debug.php
+phpinfo.php
+info.php
+
+# Email Templates Backup (keep originals)
+templates/*.backup
+templates/*.bak
+
+# Sensitive Files
+.env*
+!.env.example
+credentials.json
+secrets.json
+private_keys/
+certificates/
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archive Files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Documentation Drafts
+*.draft.md
+NOTES.md
+TODO.md

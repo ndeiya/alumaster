@@ -134,6 +134,12 @@ function initFormValidation() {
         });
         
         form.addEventListener('submit', function(e) {
+            // Skip validation for contact forms to prevent submission issues
+            if (form.classList.contains('contact-form') || form.classList.contains('inquiry-form')) {
+                console.log('Skipping JavaScript validation for contact form');
+                return true;
+            }
+            
             let isValid = true;
             const requiredFields = form.querySelectorAll('[required]');
             

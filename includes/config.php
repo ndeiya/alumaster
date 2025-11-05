@@ -69,12 +69,15 @@ if (DEBUG_MODE) {
     ini_set('log_errors', 1);
 }
 
-// Session Configuration
+// Session Configuration (only set ini settings, don't start session here)
 if (session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
-    ini_set('session.use_strict_mode', 1);
-    session_start();
+    // Only set session ini settings if no session is active
+    // Session will be started in individual files as needed
+    if (!headers_sent()) {
+        ini_set('session.cookie_httponly', 1);
+        ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
+        ini_set('session.use_strict_mode', 1);
+    }
 }
 
 // Security Headers

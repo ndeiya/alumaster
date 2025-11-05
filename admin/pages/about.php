@@ -1,8 +1,16 @@
 <?php
-require_once '../includes/auth-check.php';
+session_start();
+require_once '../../includes/config.php';
 require_once '../../includes/database.php';
+require_once '../../includes/functions.php';
+require_once '../includes/auth-check.php';
 
-$page_title = "About Page Management";
+$page_title = 'About Page Management';
+$breadcrumb = [
+    ['title' => 'Dashboard', 'url' => '../index.php'],
+    ['title' => 'Pages', 'url' => '#'],
+    ['title' => 'About Page']
+];
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
