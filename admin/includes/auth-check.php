@@ -1,7 +1,22 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Calculate the path to admin root from current file
+$current_path = $_SERVER['SCRIPT_NAME'];
+$admin_pos = strpos($current_path, '/admin/');
+if ($admin_pos !== false) {
+    $after_admin = substr($current_path, $admin_pos + 7); // +7 for '/admin/'
+    $depth = substr_count($after_admin, '/');
+    $admin_root = str_repeat('../', $depth);
+} else {
+    $admin_root = '';
+}
+
 // Admin authentication check
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: login.php');
+    header('Location: ' . $admin_root . 'login.php');
     exit;
 }
 
@@ -10,7 +25,7 @@ $session_timeout = 2 * 60 * 60; // 2 hours in seconds
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $session_timeout) {
     // Session expired
     session_destroy();
-    header('Location: login.php?expired=1');
+    header('Location: ' . $admin_root . 'login.php?expired=1');
     exit;
 }
 

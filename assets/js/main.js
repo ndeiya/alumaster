@@ -16,11 +16,6 @@ function initMobileMenu() {
     const navbarNav = document.querySelector('.navbar-nav');
     
     if (mobileToggle && navbarNav) {
-        // Create overlay element
-        const overlay = document.createElement('div');
-        overlay.className = 'mobile-menu-overlay';
-        document.body.appendChild(overlay);
-        
         // Toggle menu function
         function toggleMenu() {
             const isOpen = navbarNav.classList.contains('mobile-open');
@@ -28,13 +23,9 @@ function initMobileMenu() {
             if (isOpen) {
                 navbarNav.classList.remove('mobile-open');
                 mobileToggle.classList.remove('active');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
             } else {
                 navbarNav.classList.add('mobile-open');
                 mobileToggle.classList.add('active');
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
             }
         }
         
@@ -52,19 +43,12 @@ function initMobileMenu() {
             });
         }
         
-        // Close on overlay click
-        overlay.addEventListener('click', function() {
-            toggleMenu();
-        });
-        
         // Close mobile menu when clicking on links
         const navLinks = navbarNav.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 navbarNav.classList.remove('mobile-open');
                 mobileToggle.classList.remove('active');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
             });
         });
         
@@ -548,3 +532,31 @@ const notificationStyles = `
 const styleSheet = document.createElement('style');
 styleSheet.textContent = notificationStyles;
 document.head.appendChild(styleSheet);
+
+// WhatsApp Greeting Functionality
+function initWhatsAppGreeting() {
+    const greeting = document.getElementById('whatsappGreeting');
+    
+    if (!greeting) return;
+    
+    // Check if greeting was already shown in this session
+    if (sessionStorage.getItem('whatsappGreetingSeen')) {
+        return;
+    }
+    
+    // Show greeting after 5 seconds and keep it visible until user closes it
+    setTimeout(() => {
+        greeting.classList.add('show');
+    }, 5000);
+}
+
+function closeWhatsAppGreeting() {
+    const greeting = document.getElementById('whatsappGreeting');
+    if (greeting) {
+        greeting.classList.remove('show');
+        sessionStorage.setItem('whatsappGreetingSeen', 'true');
+    }
+}
+
+// Initialize WhatsApp greeting on page load
+document.addEventListener('DOMContentLoaded', initWhatsAppGreeting);

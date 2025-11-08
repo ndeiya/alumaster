@@ -63,7 +63,7 @@ include 'includes/header.php';
                     </div>
                     <div class="contact-info">
                         <h4>Email Us</h4>
-                        <a href="mailto:alumaster75@gmail.com">alumaster75@gmail.com</a>
+                        <a href="mailto:contact@alumastergh.com">contact@alumastergh.com</a>
                     </div>
                 </div>
                 

@@ -109,7 +109,7 @@ try {
                     'contact_items' => [
                         ['title' => 'Call Us', 'icon' => 'phone', 'lines' => ['+233-541-737-575', '+233-502-777-703']],
                         ['title' => 'Visit Us', 'icon' => 'location', 'lines' => ['16 Palace Street', 'Madina-Accra, Ghana']],
-                        ['title' => 'Email Us', 'icon' => 'email', 'lines' => ['alumaster75@gmail.com', 'www.alumastergh.com']]
+                        ['title' => 'Email Us', 'icon' => 'email', 'lines' => ['contact@alumastergh.com', 'www.alumastergh.com']]
                     ],
                     'social_links' => [
                         ['platform' => 'facebook', 'url' => 'https://www.facebook.com/alumastergh'],

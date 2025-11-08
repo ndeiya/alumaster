@@ -137,6 +137,91 @@ include 'includes/header.php';
     </section>
 <?php endif; ?>
 
+<!-- Projects Showcase Section -->
+<section class="section section-gray projects-showcase">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Our Latest Projects</h2>
+            <p class="section-subtitle">Discover our portfolio of exceptional aluminum and glass installations across Ghana</p>
+        </div>
+        
+        <?php
+        // Fetch latest 3 projects
+        try {
+            $db = new Database();
+            $pdo = $db->getConnection();
+            
+            if ($pdo) {
+                $stmt = $pdo->prepare("SELECT * FROM projects WHERE status = 'active' ORDER BY created_at DESC LIMIT 3");
+                $stmt->execute();
+                $latest_projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                $latest_projects = [];
+            }
+        } catch (Exception $e) {
+            $latest_projects = [];
+        }
+        ?>
+        
+        <?php if (!empty($latest_projects)): ?>
+            <div class="projects-grid">
+                <?php foreach ($latest_projects as $project): ?>
+                    <div class="project-card">
+                        <div class="project-image">
+                            <?php 
+                            $thumbnail = !empty($project['thumbnail']) ? $project['thumbnail'] : 'assets/images/placeholder-project.jpg';
+                            ?>
+                            <img src="<?php echo htmlspecialchars($thumbnail); ?>" 
+                                 alt="<?php echo htmlspecialchars($project['name']); ?>"
+                                 onerror="this.src='assets/images/placeholder-project.jpg'">
+                            <div class="project-overlay">
+                                <?php if ($project['is_featured']): ?>
+                                    <span class="project-category">Featured Project</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="project-content">
+                            <h3><?php echo htmlspecialchars($project['name']); ?></h3>
+                            <p><?php echo htmlspecialchars(truncate_text($project['scope'], 120)); ?></p>
+                            <?php if (!empty($project['location'])): ?>
+                                <div class="project-location">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <?php echo htmlspecialchars($project['location']); ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <div class="text-center" style="margin-top: 3rem;">
+                <a href="projects.php" class="btn btn-primary btn-lg">
+                    Explore Our Latest Projects
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </a>
+            </div>
+        <?php else: ?>
+            <!-- Fallback if no projects in database yet -->
+            <div class="text-center" style="padding: 3rem 0;">
+                <p style="font-size: 1.125rem; color: #64748b; margin-bottom: 2rem;">
+                    We're constantly working on exciting new projects. Check back soon to see our latest work!
+                </p>
+                <a href="projects.php" class="btn btn-primary btn-lg">
+                    View All Projects
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </a>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
+
 <?php if (isset($homepage_content['contact_cta'])): 
     $contact_cta = $homepage_content['contact_cta']['content'];
     $contact_cta_settings = $homepage_content['contact_cta']['settings'];

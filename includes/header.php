@@ -55,6 +55,13 @@
         ]
     }
     </script>
+    
+    <?php 
+    // Allow pages to inject additional head content
+    if (isset($additional_head)) {
+        echo $additional_head;
+    }
+    ?>
 </head>
 <body<?php echo isset($body_class) ? ' class="' . htmlspecialchars($body_class) . '"' : ''; ?>>
     <!-- Header -->
@@ -98,6 +105,9 @@
                         </a>
                     </li>
                     <?php endforeach; ?>
+                    <li class="mobile-cta-item">
+                        <a href="contact.php" class="btn btn-primary btn-block">Get Quote</a>
+                    </li>
                 </ul>
                 
                 <a href="contact.php" class="navbar-cta">Get Quote</a>

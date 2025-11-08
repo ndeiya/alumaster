@@ -93,7 +93,7 @@ try {
             
             <div class="contact-item">
                 <h3>Email</h3>
-                <p><a href="mailto:alumaster75@gmail.com">alumaster75@gmail.com</a></p>
+                <p><a href="mailto:contact@alumastergh.com">contact@alumastergh.com</a></p>
             </div>
             
             <div class="contact-item">

@@ -23,10 +23,31 @@ RewriteEngine On
     Deny from all
 </Files>
 
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+
 <Files ".htaccess">
     Order allow,deny
     Deny from all
 </Files>
+
+<Files "composer.json">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "composer.lock">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to any PHP files starting with test-, debug-, or setup-
+<FilesMatch "^(test-|debug-|setup-|install-|check_|detect-|fix-).*\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
 
 # Prevent directory browsing
 Options -Indexes

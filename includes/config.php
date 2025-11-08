@@ -21,12 +21,12 @@ define('DB_CHARSET', 'utf8mb4');
 define('SITE_NAME', 'AluMaster Aluminum System');
 define('SITE_TAGLINE', 'Where Quality Meets Affordability');
 define('SITE_URL', 'http://localhost:8000'); // Change for production
-define('SITE_EMAIL', 'alumaster75@gmail.com');
+define('SITE_EMAIL', 'contact@alumastergh.com');
 
 // Contact Information
 define('CONTACT_PHONE_PRIMARY', '+233-541-737-575');
 define('CONTACT_PHONE_SECONDARY', '+233-502-777-703');
-define('CONTACT_EMAIL', 'alumaster75@gmail.com');
+define('CONTACT_EMAIL', 'contact@alumastergh.com');
 define('CONTACT_ADDRESS', '16 Palace Street, Madina-Accra, Ghana');
 
 // Social Media

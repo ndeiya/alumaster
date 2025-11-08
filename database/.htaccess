@@ -1,0 +1,11 @@
+# Deny all access to database setup files
+# These files should only be run via command line or removed after deployment
+
+Order deny,allow
+Deny from all
+
+# If you need to access these files temporarily, comment out the above lines
+# and uncomment the lines below, then re-secure after use:
+# Order allow,deny
+# Allow from 127.0.0.1
+# Allow from ::1

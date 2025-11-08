@@ -57,7 +57,7 @@ include 'includes/header.php';
                     <h4>Get Help</h4>
                     <ul>
                         <li><a href="tel:+233541737575">Call: +233-541-737-575</a></li>
-                        <li><a href="mailto:alumaster75@gmail.com">Email Us</a></li>
+                        <li><a href="mailto:contact@alumastergh.com">Email Us</a></li>
                         <li><a href="contact.php">Get Quote</a></li>
                         <li><a href="https://wa.me/233541737575" target="_blank">WhatsApp</a></li>
                     </ul>

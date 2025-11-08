@@ -59,7 +59,7 @@ $page_title = "Homepage Preview - AluMaster Admin";
             right: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            background: #00D084;
+            background: #3b82f6;
             color: white;
             border: none;
             padding: 0.5rem 1rem;

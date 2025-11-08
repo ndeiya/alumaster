@@ -166,7 +166,7 @@ function get_setting($key, $default = '') {
         'site_tagline' => 'Where Quality Meets Affordability',
         'site_description' => 'Professional aluminum and glass solutions in Ghana',
         'contact_phone' => '+233-541-737-575',
-        'contact_email' => 'alumaster75@gmail.com',
+        'contact_email' => 'contact@alumastergh.com',
         'contact_address' => '16 Palace Street, Madina-Accra, Ghana'
     ];
     

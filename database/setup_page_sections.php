@@ -171,7 +171,7 @@ try {
                         [
                             'icon' => 'email',
                             'label' => 'Email Us',
-                            'values' => ['alumaster75@gmail.com']
+                            'values' => ['contact@alumastergh.com']
                         ],
                         [
                             'icon' => 'location',

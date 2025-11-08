@@ -1,18 +1,7 @@
 # Admin Directory Security
-# Redirect all admin access to login page if not authenticated
+# Authentication is handled by auth-check.php included in each file
 
 RewriteEngine On
-
-# Allow direct access to login.php, logout.php, and assets
-RewriteCond %{REQUEST_FILENAME} !login\.php$
-RewriteCond %{REQUEST_FILENAME} !logout\.php$
-RewriteCond %{REQUEST_URI} !^/admin/assets/
-RewriteCond %{REQUEST_URI} !^/admin/login\.php$
-RewriteCond %{REQUEST_URI} !^/admin/logout\.php$
-
-# For all other admin files, check if user is logged in via PHP
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^(.*)$ check-auth.php?redirect=$1 [QSA,L]
 
 # Security headers
 <IfModule mod_headers.c>
