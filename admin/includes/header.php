@@ -138,11 +138,13 @@
                             try {
                                 $db = new Database();
                                 $conn = $db->getConnection();
-                                $stmt = $conn->prepare("SELECT COUNT(*) FROM inquiries WHERE status = 'unread'");
-                                $stmt->execute();
-                                $unread_count = $stmt->fetchColumn();
-                                if ($unread_count > 0) {
-                                    echo '<span class="nav-badge">' . $unread_count . '</span>';
+                                if ($conn) {
+                                    $stmt = $conn->prepare("SELECT COUNT(*) FROM inquiries WHERE status = 'unread'");
+                                    $stmt->execute();
+                                    $unread_count = $stmt->fetchColumn();
+                                    if ($unread_count > 0) {
+                                        echo '<span class="nav-badge">' . $unread_count . '</span>';
+                                    }
                                 }
                             } catch (Exception $e) {
                                 // Ignore error
@@ -182,8 +184,8 @@
                         </svg>
                     </div>
                     <div class="sidebar-user-info">
-                        <div class="sidebar-user-name"><?php echo htmlspecialchars($current_admin['name']); ?></div>
-                        <div class="sidebar-user-role"><?php echo ucfirst($current_admin['role']); ?></div>
+                        <div class="sidebar-user-name"><?php echo htmlspecialchars($current_admin['name'] ?? 'Unknown User'); ?></div>
+                        <div class="sidebar-user-role"><?php echo ucfirst($current_admin['role'] ?? 'editor'); ?></div>
                     </div>
                     <div class="sidebar-user-dropdown">
                         <button class="sidebar-user-toggle" aria-label="User menu">

@@ -38,12 +38,17 @@ if (!isset($_SESSION['session_regenerated']) || (time() - $_SESSION['session_reg
     $_SESSION['session_regenerated'] = time();
 }
 
-// Get current admin info
+// Get current admin info with defaults to prevent undefined array key warnings
 $current_admin = [
-    'id' => $_SESSION['admin_id'],
-    'username' => $_SESSION['admin_username'],
-    'role' => $_SESSION['admin_role'],
-    'name' => $_SESSION['admin_name']
+    'id' => $_SESSION['admin_id'] ?? 0,
+    'username' => $_SESSION['admin_username'] ?? 'Unknown',
+    'role' => $_SESSION['admin_role'] ?? 'editor',
+    'name' => $_SESSION['admin_name'] ?? 'Unknown User',
+    'email' => $_SESSION['admin_email'] ?? '',
+    'first_name' => $_SESSION['admin_first_name'] ?? '',
+    'last_name' => $_SESSION['admin_last_name'] ?? '',
+    'last_login' => $_SESSION['admin_last_login'] ?? null,
+    'created_at' => $_SESSION['admin_created_at'] ?? date('Y-m-d H:i:s')
 ];
 
 // Role-based access control helper function

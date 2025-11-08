@@ -230,6 +230,12 @@ function get_navigation_menu($location = 'header') {
         $db = new Database();
         $conn = $db->getConnection();
         
+        // Check if connection is valid
+        if (!$conn) {
+            error_log("Database connection is null in get_navigation_menu()");
+            return [];
+        }
+        
         // Get menu by location
         $stmt = $conn->prepare("SELECT id FROM navigation_menus WHERE location = ? AND is_active = 1 LIMIT 1");
         $stmt->execute([$location]);
@@ -382,27 +388,31 @@ function getPageSections($page_slug) {
         $db = new Database();
         $pdo = $db->getConnection();
         
-        if ($pdo) {
-            $stmt = $pdo->prepare("SELECT * FROM page_sections WHERE page_slug = ? AND is_active = 1 ORDER BY sort_order ASC");
-            $stmt->execute([$page_slug]);
-            $sections = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Convert sections to associative array for easier access
-            $page_content = [];
-            foreach ($sections as $section) {
-                $page_content[$section['section_key']] = [
-                    'content' => json_decode($section['content'], true),
-                    'settings' => json_decode($section['settings'], true)
-                ];
-            }
-            
-            return $page_content;
+        // Check if connection is valid
+        if (!$pdo) {
+            error_log("Database connection is null in getPageSections()");
+            return [];
         }
+        
+        $stmt = $pdo->prepare("SELECT * FROM page_sections WHERE page_slug = ? AND is_active = 1 ORDER BY sort_order ASC");
+        $stmt->execute([$page_slug]);
+        $sections = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Convert sections to associative array for easier access
+        $page_content = [];
+        foreach ($sections as $section) {
+            $page_content[$section['section_key']] = [
+                'content' => json_decode($section['content'], true),
+                'settings' => json_decode($section['settings'], true)
+            ];
+        }
+        
+        return $page_content;
+        
     } catch (Exception $e) {
         error_log("Error loading page sections: " . $e->getMessage());
+        return [];
     }
-    
-    return [];
 }
 
 // Get benefit/feature icon SVG

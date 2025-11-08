@@ -44,12 +44,17 @@ if ($_POST && isset($_POST['login']) && empty($error_message)) {
             $admin = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if ($admin && password_verify($password, $admin['password'])) {
-                // Successful login
+                // Successful login - set all session variables
                 $_SESSION['admin_logged_in'] = true;
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_username'] = $admin['username'];
                 $_SESSION['admin_role'] = $admin['role'];
                 $_SESSION['admin_name'] = $admin['first_name'] . ' ' . $admin['last_name'];
+                $_SESSION['admin_email'] = $admin['email'];
+                $_SESSION['admin_first_name'] = $admin['first_name'];
+                $_SESSION['admin_last_name'] = $admin['last_name'];
+                $_SESSION['admin_last_login'] = $admin['last_login'];
+                $_SESSION['admin_created_at'] = $admin['created_at'];
                 
                 // Reset login attempts
                 unset($_SESSION['login_attempts']);

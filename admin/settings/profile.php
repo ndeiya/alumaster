@@ -98,11 +98,18 @@ if ($_POST && isset($_POST['update_profile'])) {
                     $success_message = "Profile updated successfully!";
                     
                     // Update session data
-                    $_SESSION['admin_user']['username'] = $username;
-                    $_SESSION['admin_user']['email'] = $email;
-                    $_SESSION['admin_user']['first_name'] = $first_name;
-                    $_SESSION['admin_user']['last_name'] = $last_name;
-                    $current_admin = $_SESSION['admin_user'];
+                    $_SESSION['admin_username'] = $username;
+                    $_SESSION['admin_email'] = $email;
+                    $_SESSION['admin_first_name'] = $first_name;
+                    $_SESSION['admin_last_name'] = $last_name;
+                    $_SESSION['admin_name'] = $first_name . ' ' . $last_name;
+                    
+                    // Update current_admin array
+                    $current_admin['username'] = $username;
+                    $current_admin['email'] = $email;
+                    $current_admin['first_name'] = $first_name;
+                    $current_admin['last_name'] = $last_name;
+                    $current_admin['name'] = $first_name . ' ' . $last_name;
                 }
             }
         } catch (Exception $e) {
@@ -155,7 +162,7 @@ include '../includes/header.php';
             <div class="form-group">
                 <label for="username" class="form-label">Username *</label>
                 <input type="text" id="username" name="username" class="form-input" required 
-                       value="<?php echo htmlspecialchars($current_admin['username']); ?>"
+                       value="<?php echo htmlspecialchars($current_admin['username'] ?? ''); ?>"
                        placeholder="Enter username">
                 <div class="form-help">Must be at least 3 characters long</div>
             </div>
@@ -163,21 +170,21 @@ include '../includes/header.php';
             <div class="form-group">
                 <label for="email" class="form-label">Email Address *</label>
                 <input type="email" id="email" name="email" class="form-input" required 
-                       value="<?php echo htmlspecialchars($current_admin['email']); ?>"
+                       value="<?php echo htmlspecialchars($current_admin['email'] ?? ''); ?>"
                        placeholder="user@example.com">
             </div>
 
             <div class="form-group">
                 <label for="first_name" class="form-label">First Name *</label>
                 <input type="text" id="first_name" name="first_name" class="form-input" required 
-                       value="<?php echo htmlspecialchars($current_admin['first_name']); ?>"
+                       value="<?php echo htmlspecialchars($current_admin['first_name'] ?? ''); ?>"
                        placeholder="Enter first name">
             </div>
 
             <div class="form-group">
                 <label for="last_name" class="form-label">Last Name *</label>
                 <input type="text" id="last_name" name="last_name" class="form-input" required 
-                       value="<?php echo htmlspecialchars($current_admin['last_name']); ?>"
+                       value="<?php echo htmlspecialchars($current_admin['last_name'] ?? ''); ?>"
                        placeholder="Enter last name">
             </div>
         </div>
@@ -246,18 +253,18 @@ include '../includes/header.php';
             <div class="info-grid">
                 <div class="info-item">
                     <label>User ID</label>
-                    <span><?php echo $current_admin['id']; ?></span>
+                    <span><?php echo $current_admin['id'] ?? 'N/A'; ?></span>
                 </div>
                 <div class="info-item">
                     <label>Role</label>
-                    <span class="status-badge <?php echo $current_admin['role'] === 'super_admin' ? 'status-active' : 'status-draft'; ?>">
-                        <?php echo ucfirst(str_replace('_', ' ', $current_admin['role'])); ?>
+                    <span class="status-badge <?php echo ($current_admin['role'] ?? 'editor') === 'super_admin' ? 'status-active' : 'status-draft'; ?>">
+                        <?php echo ucfirst(str_replace('_', ' ', $current_admin['role'] ?? 'editor')); ?>
                     </span>
                 </div>
                 <div class="info-item">
                     <label>Last Login</label>
                     <span>
-                        <?php if ($current_admin['last_login']): ?>
+                        <?php if (!empty($current_admin['last_login'])): ?>
                             <?php echo date('M j, Y g:i A', strtotime($current_admin['last_login'])); ?>
                         <?php else: ?>
                             Never
@@ -266,7 +273,12 @@ include '../includes/header.php';
                 </div>
                 <div class="info-item">
                     <label>Account Created</label>
-                    <span><?php echo date('M j, Y g:i A', strtotime($current_admin['created_at'])); ?></span>
+                    <span>
+                        <?php 
+                        $created_at = $current_admin['created_at'] ?? null;
+                        echo $created_at ? date('M j, Y g:i A', strtotime($created_at)) : 'Unknown';
+                        ?>
+                    </span>
                 </div>
             </div>
         </div>
