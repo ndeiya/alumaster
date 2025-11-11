@@ -28,7 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'primary_button_link' => $_POST['hero_primary_link'] ?? '',
             'secondary_button_text' => $_POST['hero_secondary_btn'] ?? '',
             'secondary_button_link' => $_POST['hero_secondary_link'] ?? '',
-            'background_image' => $_POST['hero_bg_image'] ?? ''
+            'background_image' => $_POST['hero_bg_image'] ?? '',
+            'video_url' => $_POST['hero_video_url'] ?? '',
+            'video_type' => $_POST['hero_video_type'] ?? 'youtube',
+            'show_video' => isset($_POST['hero_show_video']) ? true : false,
+            'video_autoplay' => isset($_POST['hero_video_autoplay']) ? true : false
         ]);
     } else {
         $content = $_POST['content'] ?? '';
@@ -131,6 +135,42 @@ include '../includes/header.php';
                                 <div class="editor-field">
                                     <label>Background Image</label>
                                     <input type="text" name="hero_bg_image" value="<?php echo htmlspecialchars($content['background_image'] ?? ''); ?>" class="form-control">
+                                    <small class="form-text">Path to background image (shown when video is disabled)</small>
+                                </div>
+                                
+                                <div class="editor-section-divider">
+                                    <h4>Video Settings</h4>
+                                </div>
+                                
+                                <div class="editor-field">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="hero_show_video" <?php echo ($content['show_video'] ?? false) ? 'checked' : ''; ?>>
+                                        <span class="checkmark"></span>
+                                        Enable Video Background
+                                    </label>
+                                </div>
+                                
+                                <div class="editor-field">
+                                    <label>Video Type</label>
+                                    <select name="hero_video_type" class="form-control">
+                                        <option value="youtube" <?php echo ($content['video_type'] ?? 'youtube') === 'youtube' ? 'selected' : ''; ?>>YouTube</option>
+                                        <option value="vimeo" <?php echo ($content['video_type'] ?? 'youtube') === 'vimeo' ? 'selected' : ''; ?>>Vimeo</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="editor-field">
+                                    <label>Video URL</label>
+                                    <input type="text" name="hero_video_url" value="<?php echo htmlspecialchars($content['video_url'] ?? ''); ?>" class="form-control" placeholder="https://www.youtube.com/watch?v=VIDEO_ID or https://vimeo.com/VIDEO_ID">
+                                    <small class="form-text">Full YouTube or Vimeo URL</small>
+                                </div>
+                                
+                                <div class="editor-field">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="hero_video_autoplay" <?php echo ($content['video_autoplay'] ?? true) ? 'checked' : ''; ?>>
+                                        <span class="checkmark"></span>
+                                        Autoplay Video (muted)
+                                    </label>
+                                    <small class="form-text">Video will autoplay muted for better UX</small>
                                 </div>
                             <?php else: ?>
                                 <textarea name="content" rows="10" class="form-control json-editor" required><?php echo htmlspecialchars($section['content']); ?></textarea>
@@ -167,13 +207,14 @@ include '../includes/header.php';
 .homepage-sections {
     display: grid;
     gap: 2rem;
+    max-width: 1200px;
 }
 
 .section-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07);
     border: 1px solid #e5e7eb;
 }
 
@@ -181,21 +222,25 @@ include '../includes/header.php';
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px solid #e5e7eb;
 }
 
 .section-header h3 {
     margin: 0;
-    color: #1f2937;
+    color: #111827;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 .section-status {
-    padding: 0.25rem 0.75rem;
+    padding: 0.375rem 1rem;
     border-radius: 9999px;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
 }
 
 .section-status.active {
@@ -211,13 +256,18 @@ include '../includes/header.php';
 .json-editor {
     font-family: 'Courier New', monospace;
     font-size: 0.875rem;
-    line-height: 1.5;
+    line-height: 1.6;
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+    border: 2px solid #d1d5db !important;
 }
 
 .form-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
 }
 
 .preview-btn {
@@ -229,14 +279,14 @@ include '../includes/header.php';
 }
 
 .content-editor {
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    padding: 1rem;
-    background-color: #f9fafb;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: #ffffff;
 }
 
 .editor-field {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 .editor-field:last-child {
@@ -245,9 +295,214 @@ include '../includes/header.php';
 
 .editor-field label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.625rem;
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.9375rem;
+}
+
+.editor-field .form-control,
+.editor-field input[type="text"],
+.editor-field textarea,
+.editor-field select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    color: #1f2937;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.editor-field .form-control:focus,
+.editor-field input[type="text"]:focus,
+.editor-field textarea:focus,
+.editor-field select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.editor-field textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.6;
+}
+
+.editor-field small.form-text {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.editor-section-divider {
+    margin: 2rem -1.5rem 1.5rem;
+    padding: 2rem 1.5rem 1.5rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+    border: 2px solid #2563eb;
+}
+
+.editor-section-divider h4 {
+    margin: 0 0 1rem 0;
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.editor-section-divider h4::before {
+    content: "🎬";
+    font-size: 1.5rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* Video section specific styling */
+.editor-section-divider .editor-field label {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.editor-section-divider .editor-field small.form-text {
+    color: #e0e7ff !important;
     font-weight: 500;
-    color: #374151;
+}
+
+.editor-section-divider .checkbox-label {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.editor-section-divider .checkbox-label:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.editor-section-divider .checkbox-label span:not(.checkmark) {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.editor-section-divider input[type="text"],
+.editor-section-divider select,
+.editor-section-divider textarea {
+    background-color: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    color: #1f2937 !important;
+}
+
+.editor-section-divider input[type="text"]:focus,
+.editor-section-divider select:focus,
+.editor-section-divider textarea:focus {
+    border-color: #60a5fa !important;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3) !important;
+}
+
+.editor-section-divider input[type="checkbox"] {
+    width: 1.5rem;
+    height: 1.5rem;
+    accent-color: #ffffff;
+    cursor: pointer;
+}
+
+/* Checkbox styling */
+.editor-field .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.editor-field .checkbox-label:hover {
+    background-color: #f9fafb;
+}
+
+.editor-field .checkbox-label input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: #3b82f6;
+}
+
+.editor-field .checkbox-label span:not(.checkmark) {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* Form group styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.625rem;
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.9375rem;
+}
+
+.form-group .form-control,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    color: #1f2937;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.form-group .form-control:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Button improvements */
+.btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+    background-color: #6b7280;
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #4b5563;
 }
 </style>
 

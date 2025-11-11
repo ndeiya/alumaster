@@ -114,7 +114,7 @@ if ($_POST && isset($_POST['login']) && empty($error_message)) {
         <div class="login-card">
             <div class="login-header">
                 <div class="login-logo">
-                    <img src="../assets/images/logo.png" alt="AluMaster" class="logo-image">
+                    <img src="../assets/images/Alumaster-logo.png" alt="AluMaster" class="logo-image" onerror="this.style.display='none'">
                 </div>
                 <h1 class="login-title">Admin Login</h1>
                 <p class="login-subtitle">Welcome back! Please sign in to your account.</p>

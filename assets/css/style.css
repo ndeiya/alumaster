@@ -5362,3 +5362,110 @@ body.contact-page .contact-hero {
         margin-bottom: 2rem;
     }
 }
+
+/* ===== HERO VIDEO STYLES ===== */
+.hero-media {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.1) 0%,
+        rgba(26, 32, 44, 0.2) 100%
+    );
+    pointer-events: none;
+    border-radius: var(--radius-2xl);
+}
+
+/* Fallback for image when video is not shown */
+.hero-image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Mobile responsive video */
+@media (max-width: 768px) {
+    .hero-video-container {
+        border-radius: var(--radius-lg);
+    }
+    
+    .video-overlay {
+        border-radius: var(--radius-lg);
+    }
+    
+    .video-wrapper {
+        padding-bottom: 75%; /* Adjust aspect ratio for mobile */
+    }
+}
+
+/* Video play button overlay (optional enhancement) */
+.video-play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background-color: rgba(59, 130, 246, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    z-index: 10;
+}
+
+.video-play-overlay:hover {
+    background-color: var(--color-primary);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-play-overlay svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+    margin-left: 4px;
+}

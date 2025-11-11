@@ -100,6 +100,9 @@ try {
     $conditions = ["1=1"];
     $params = [];
     
+    // Exclude homepage from list (managed separately via Pages > Homepage)
+    $conditions[] = "is_homepage = 0";
+    
     if (!empty($search)) {
         $conditions[] = "(title LIKE ? OR content LIKE ?)";
         $params[] = "%$search%";

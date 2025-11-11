@@ -64,9 +64,54 @@ include 'includes/header.php';
                         <?php endif; ?>
                     </div>
                 </div>
-                <div class="hero-image">
-                    <?php if (!empty($hero['background_image'])): ?>
-                        <img src="<?php echo htmlspecialchars($hero['background_image']); ?>" alt="Modern aluminum and glass building">
+                <div class="hero-media">
+                    <?php if (!empty($hero['show_video']) && !empty($hero['video_url'])): ?>
+                        <div class="hero-video-container">
+                            <?php
+                            $video_url = $hero['video_url'];
+                            $video_type = $hero['video_type'] ?? 'youtube';
+                            $autoplay = $hero['video_autoplay'] ?? true;
+                            
+                            // Extract video ID and create embed URL
+                            $embed_url = '';
+                            if ($video_type === 'youtube') {
+                                // Extract YouTube video ID
+                                preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i', $video_url, $matches);
+                                if (!empty($matches[1])) {
+                                    $video_id = $matches[1];
+                                    $embed_url = "https://www.youtube.com/embed/{$video_id}?rel=0&modestbranding=1&controls=1";
+                                    if ($autoplay) {
+                                        $embed_url .= "&autoplay=1&mute=1&loop=1&playlist={$video_id}";
+                                    }
+                                }
+                            } elseif ($video_type === 'vimeo') {
+                                // Extract Vimeo video ID
+                                preg_match('/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/', $video_url, $matches);
+                                if (!empty($matches[3])) {
+                                    $video_id = $matches[3];
+                                    $embed_url = "https://player.vimeo.com/video/{$video_id}?title=0&byline=0&portrait=0";
+                                    if ($autoplay) {
+                                        $embed_url .= "&autoplay=1&muted=1&loop=1";
+                                    }
+                                }
+                            }
+                            
+                            if ($embed_url): ?>
+                                <div class="video-wrapper">
+                                    <iframe 
+                                        src="<?php echo htmlspecialchars($embed_url); ?>" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen
+                                        class="hero-video"
+                                        loading="lazy">
+                                    </iframe>
+                                </div>
+                                <div class="video-overlay"></div>
+                            <?php endif; ?>
+                        </div>
+                    <?php elseif (!empty($hero['background_image'])): ?>
+                        <img src="<?php echo htmlspecialchars($hero['background_image']); ?>" alt="Modern aluminum and glass building" class="hero-image">
                     <?php endif; ?>
                 </div>
             </div>

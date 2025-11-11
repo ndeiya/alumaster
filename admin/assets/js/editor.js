@@ -116,8 +116,9 @@ class SimpleEditor {
 
 // Initialize editors on page load
 document.addEventListener('DOMContentLoaded', function() {
-    const contentEditors = document.querySelectorAll('.content-editor');
-    contentEditors.forEach(textarea => {
+    // Only initialize editor on JSON editor textareas, not on form field containers
+    const jsonEditors = document.querySelectorAll('textarea.json-editor');
+    jsonEditors.forEach(textarea => {
         if (!textarea.classList.contains('no-editor')) {
             new SimpleEditor(textarea);
         }

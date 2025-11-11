@@ -1,0 +1,30 @@
+# AluMaster Aluminum System - Robots.txt
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /database/
+Disallow: /includes/
+Disallow: /vendor/
+Disallow: /logs/
+Disallow: /uploads/temp/
+
+# Disallow utility files
+Disallow: /*.sql$
+Disallow: /*.md$
+Disallow: /check-video-simple.php
+Disallow: /security-audit.php
+Disallow: /deploy.sh
+
+# Allow CSS, JS, and images
+Allow: /assets/
+Allow: /uploads/
+
+# Sitemap location
+Sitemap: https://alumastergh.com/sitemap.php
+Sitemap: https://alumastergh.com/sitemap.xml
+
+# Crawl delay (optional - be nice to server)
+Crawl-delay: 1
