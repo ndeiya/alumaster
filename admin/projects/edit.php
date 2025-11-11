@@ -37,24 +37,29 @@ $before_images = array_filter($images, fn($img) => $img['image_type'] === 'befor
 $after_images = array_filter($images, fn($img) => $img['image_type'] === 'after');
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name']);
-    $location = trim($_POST['location']);
-    $scope = trim($_POST['scope']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['delete_image'])) {
+    $name = trim($_POST['name'] ?? '');
+    $location = trim($_POST['location'] ?? '');
+    $scope = trim($_POST['scope'] ?? '');
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
-    $status = $_POST['status'];
-    $display_order = (int)$_POST['display_order'];
+    $status = $_POST['status'] ?? 'active';
+    $display_order = (int)($_POST['display_order'] ?? 0);
     
     $errors = [];
     
-    if (empty($name)) {
-        $errors[] = "Project name is required.";
-    }
-    if (empty($location)) {
-        $errors[] = "Location is required.";
-    }
-    if (empty($scope)) {
-        $errors[] = "Scope is required.";
+    // Only validate if this is a main form submission (has name field)
+    $is_main_form = !empty($_POST['name']) || isset($_POST['update_project']);
+    
+    if ($is_main_form) {
+        if (empty($name)) {
+            $errors[] = "Project name is required.";
+        }
+        if (empty($location)) {
+            $errors[] = "Location is required.";
+        }
+        if (empty($scope)) {
+            $errors[] = "Scope is required.";
+        }
     }
     
     $thumbnail = $project['thumbnail'];
@@ -85,8 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare("UPDATE projects SET name = ?, location = ?, scope = ?, thumbnail = ?, is_featured = ?, status = ?, display_order = ? WHERE id = ?");
-            $stmt->execute([$name, $location, $scope, $thumbnail, $is_featured, $status, $display_order, $project_id]);
+            // Only update main project fields if this is the main form submission
+            if ($is_main_form) {
+                $stmt = $pdo->prepare("UPDATE projects SET name = ?, location = ?, scope = ?, thumbnail = ?, is_featured = ?, status = ?, display_order = ? WHERE id = ?");
+                $stmt->execute([$name, $location, $scope, $thumbnail, $is_featured, $status, $display_order, $project_id]);
+            }
             
             // Handle new before images
             if (isset($_FILES['before_images'])) {
