@@ -12,6 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once 'includes/config.php';
 require_once 'includes/database.php';
 require_once 'includes/functions.php';
+require_once 'includes/anti-spam.php';
 
 // Load environment variables for email
 if (file_exists('.env')) {
@@ -43,6 +44,11 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Generate form timestamp for time-based validation
+if (!isset($_SESSION['form_timestamp'])) {
+    $_SESSION['form_timestamp'] = time();
+}
+
 // Debug logging
 error_log("=== CONTACT FORM DEBUG START ===");
 error_log("POST data: " . json_encode($_POST));
@@ -52,6 +58,15 @@ error_log("CSRF token in session: " . ($_SESSION['csrf_token'] ?? 'NOT SET'));
 // Handle form submission
 if ($_POST && isset($_POST['submit_inquiry'])) {
     error_log("Form processing started - submit_inquiry found");
+    
+    // Get IP address
+    $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    
+    // Check if IP is blocked
+    if (AntiSpam::isIPBlocked($ip_address)) {
+        error_log("Blocked IP attempt: {$ip_address}");
+        $form_errors[] = "Your request could not be processed at this time.";
+    } else {
     
     // Validate CSRF token
     $csrf_valid = isset($_POST['csrf_token']) && 
@@ -63,40 +78,113 @@ if ($_POST && isset($_POST['submit_inquiry'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // Generate new token
     } else {
         
-        // Sanitize form data
-        $first_name = sanitize_input($_POST['first_name'] ?? '');
-        $last_name = sanitize_input($_POST['last_name'] ?? '');
-        $email = sanitize_input($_POST['email'] ?? '');
-        $phone = sanitize_input($_POST['phone'] ?? '');
-        $service_interest = sanitize_input($_POST['service_interest'] ?? '');
-        $message = sanitize_input($_POST['message'] ?? '');
+        // ANTI-SPAM MEASURES
         
-        // Validate required fields
-        if (empty($first_name)) $form_errors[] = "First name is required.";
-        if (empty($last_name)) $form_errors[] = "Last name is required.";
-        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $form_errors[] = "Valid email is required.";
+        // 1. Honeypot check - bots fill hidden fields
+        if (!empty($_POST['website']) || !empty($_POST['company_url'])) {
+            AntiSpam::logSpamAttempt($ip_address, 'HONEYPOT', 'Hidden field filled');
+            // Silently reject - don't tell spammer why
+            $form_success = true; // Fake success
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            // Don't process further
+            goto skip_processing;
         }
-        if (empty($phone)) $form_errors[] = "Phone number is required.";
-        if (empty($message)) $form_errors[] = "Message is required.";
         
-        // If no validation errors, save to database
+        // 2. Time-based validation - ensure minimum 3 seconds on page
+        $form_load_time = intval($_POST['form_timestamp'] ?? 0);
+        $time_spent = time() - $form_load_time;
+        if ($time_spent < 3) {
+            AntiSpam::logSpamAttempt($ip_address, 'TOO_FAST', "Submitted in {$time_spent}s");
+            $form_errors[] = "Please take a moment to review your message before submitting.";
+        }
+        
+        // 3. Rate limiting - prevent rapid successive submissions
+        $rate_limit_key = 'rate_limit_' . md5($ip_address);
+        $last_submission = $_SESSION[$rate_limit_key] ?? 0;
+        $time_since_last = time() - $last_submission;
+        
+        if ($time_since_last < 60) { // 60 seconds between submissions
+            AntiSpam::logSpamAttempt($ip_address, 'RATE_LIMIT', "Too many requests ({$time_since_last}s since last)");
+            $form_errors[] = "Please wait a moment before submitting another message. Try again in " . (60 - $time_since_last) . " seconds.";
+        }
+        
+        // Check for excessive submissions from this IP
+        $submission_count = AntiSpam::getSubmissionCount($ip_address, 60);
+        if ($submission_count > 5) {
+            AntiSpam::logSpamAttempt($ip_address, 'EXCESSIVE_SUBMISSIONS', "$submission_count submissions in 60 minutes");
+            AntiSpam::blockIP($ip_address, 'Excessive submissions');
+            $form_errors[] = "Too many submission attempts. Please contact us directly.";
+        }
+        
+        // 4. Check for spam patterns in message content
+        $message_text = $_POST['message'] ?? '';
+        if (AntiSpam::containsSpamPatterns($message_text)) {
+            AntiSpam::logSpamAttempt($ip_address, 'SPAM_PATTERN', 'Message contains spam keywords');
+            $form_errors[] = "Your message contains content that appears to be spam. Please revise and try again.";
+        }
+        
+        // 5. Check for excessive links in message
+        $link_count = AntiSpam::countURLs($message_text);
+        if ($link_count > 2) {
+            AntiSpam::logSpamAttempt($ip_address, 'EXCESSIVE_LINKS', "{$link_count} links in message");
+            $form_errors[] = "Please remove some links from your message (maximum 2 allowed).";
+        }
+        
+        // Only proceed if anti-spam checks passed
         if (empty($form_errors)) {
-            try {
-                $db = new Database();
-                $conn = $db->getConnection();
-                
-                if (!$conn) {
-                    throw new Exception("Database connection failed");
-                }
-                
-                // Insert inquiry into database
-                $full_name = $first_name . ' ' . $last_name;
-                $stmt = $conn->prepare("INSERT INTO inquiries (name, email, phone, service_interest, message, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-                $result = $stmt->execute([$full_name, $email, $phone, $service_interest, $message]);
-                
-                if ($result) {
-                    $form_success = true;
+        
+            // Sanitize form data
+            $first_name = sanitize_input($_POST['first_name'] ?? '');
+            $last_name = sanitize_input($_POST['last_name'] ?? '');
+            $email = sanitize_input($_POST['email'] ?? '');
+            $phone = sanitize_input($_POST['phone'] ?? '');
+            $service_interest = sanitize_input($_POST['service_interest'] ?? '');
+            $message = sanitize_input($_POST['message'] ?? '');
+        
+            // Validate required fields
+            if (empty($first_name)) $form_errors[] = "First name is required.";
+            if (empty($last_name)) $form_errors[] = "Last name is required.";
+            if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $form_errors[] = "Valid email is required.";
+            }
+            if (empty($phone)) $form_errors[] = "Phone number is required.";
+            if (empty($message)) $form_errors[] = "Message is required.";
+            
+            // Additional validation - check field lengths
+            if (strlen($first_name) > 50) $form_errors[] = "First name is too long.";
+            if (strlen($last_name) > 50) $form_errors[] = "Last name is too long.";
+            if (strlen($message) < 10) $form_errors[] = "Please provide a more detailed message (at least 10 characters).";
+            if (strlen($message) > 2000) $form_errors[] = "Message is too long (maximum 2000 characters).";
+            
+            // Check for suspicious email
+            if (AntiSpam::isSuspiciousEmail($email)) {
+                AntiSpam::logSpamAttempt($ip_address, 'FAKE_EMAIL', "Email: {$email}");
+                $form_errors[] = "Please provide a valid email address.";
+            }
+            
+            // If no validation errors, save to database
+            if (empty($form_errors)) {
+                try {
+                    $db = new Database();
+                    $conn = $db->getConnection();
+                    
+                    if (!$conn) {
+                        throw new Exception("Database connection failed");
+                    }
+                    
+                    // Insert inquiry into database
+                    $full_name = $first_name . ' ' . $last_name;
+                    $stmt = $conn->prepare("INSERT INTO inquiries (name, email, phone, service_interest, message, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
+                    $result = $stmt->execute([$full_name, $email, $phone, $service_interest, $message]);
+                    
+                    if ($result) {
+                        $form_success = true;
+                        
+                        // Update rate limiting timestamp
+                        $_SESSION[$rate_limit_key] = time();
+                        
+                        // Log successful submission (for monitoring)
+                        AntiSpam::logSpamAttempt($ip_address, 'SUCCESS', "Valid submission from {$email}");
                     
                     // Send email notification
                     try {
@@ -122,19 +210,25 @@ if ($_POST && isset($_POST['submit_inquiry'])) {
                         error_log("Email sending failed: " . $e->getMessage());
                     }
                     
-                    // Generate new CSRF token for security
-                    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                        // Generate new CSRF token for security
+                        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                        // Generate new form timestamp
+                        $_SESSION['form_timestamp'] = time();
                     
-                } else {
-                    $form_errors[] = "Failed to save your inquiry. Please try again.";
+                    } else {
+                        $form_errors[] = "Failed to save your inquiry. Please try again.";
+                    }
+                    
+                } catch (Exception $e) {
+                    $form_errors[] = "There was an error submitting your inquiry. Please try again.";
+                    error_log("Contact form error: " . $e->getMessage());
                 }
-                
-            } catch (Exception $e) {
-                $form_errors[] = "There was an error submitting your inquiry. Please try again.";
-                error_log("Contact form error: " . $e->getMessage());
             }
         }
     }
+    }
+    
+    skip_processing:
 }
 
 include 'includes/header.php';
@@ -285,6 +379,13 @@ include 'includes/header.php';
                         <form class="contact-form-clean" method="POST" action="">
                             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                             <input type="hidden" name="submit_inquiry" value="1">
+                            <input type="hidden" name="form_timestamp" value="<?php echo time(); ?>">
+                            
+                            <!-- Honeypot fields - hidden from humans, visible to bots -->
+                            <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
+                                <input type="text" name="website" tabindex="-1" autocomplete="off" />
+                                <input type="text" name="company_url" tabindex="-1" autocomplete="off" />
+                            </div>
                             
                             <div class="form-row">
                                 <div class="form-group">
@@ -403,24 +504,85 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.querySelector('.contact-form-clean');
     
     if (contactForm) {
+        // Track when form was loaded for time-based validation
+        const formLoadTime = Date.now();
+        
         // Add form submit handler
         contactForm.addEventListener('submit', function(e) {
+            // Check minimum time spent on form (3 seconds)
+            const timeSpent = (Date.now() - formLoadTime) / 1000;
+            if (timeSpent < 3) {
+                e.preventDefault();
+                alert('Please take a moment to review your message before submitting.');
+                return false;
+            }
+            
             // Simple validation
             const requiredFields = this.querySelectorAll('[required]');
             let isValid = true;
+            let firstInvalidField = null;
             
             requiredFields.forEach(field => {
                 if (!field.value.trim()) {
                     field.style.borderColor = '#dc3545';
                     isValid = false;
+                    if (!firstInvalidField) firstInvalidField = field;
                 } else {
                     field.style.borderColor = '#ced4da';
                 }
             });
             
+            // Validate email format
+            const emailField = this.querySelector('[name="email"]');
+            if (emailField && emailField.value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailField.value)) {
+                    emailField.style.borderColor = '#dc3545';
+                    isValid = false;
+                    if (!firstInvalidField) firstInvalidField = emailField;
+                }
+            }
+            
+            // Validate message length
+            const messageField = this.querySelector('[name="message"]');
+            if (messageField && messageField.value) {
+                if (messageField.value.trim().length < 10) {
+                    messageField.style.borderColor = '#dc3545';
+                    isValid = false;
+                    alert('Please provide a more detailed message (at least 10 characters).');
+                    if (!firstInvalidField) firstInvalidField = messageField;
+                } else if (messageField.value.length > 2000) {
+                    messageField.style.borderColor = '#dc3545';
+                    isValid = false;
+                    alert('Message is too long. Please keep it under 2000 characters.');
+                    if (!firstInvalidField) firstInvalidField = messageField;
+                }
+            }
+            
+            // Check for spam patterns
+            if (messageField && messageField.value) {
+                const spamPatterns = [
+                    /viagra|cialis|pharmacy|casino|poker/i,
+                    /click here|buy now|limited time|act now/i
+                ];
+                
+                for (let pattern of spamPatterns) {
+                    if (pattern.test(messageField.value)) {
+                        messageField.style.borderColor = '#dc3545';
+                        isValid = false;
+                        alert('Your message contains content that appears to be spam. Please revise your message.');
+                        if (!firstInvalidField) firstInvalidField = messageField;
+                        break;
+                    }
+                }
+            }
+            
             if (!isValid) {
                 e.preventDefault();
-                alert('Please fill in all required fields.');
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 return false;
             }
             
@@ -428,14 +590,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn) {
                 const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = 'Sending...';
+                submitBtn.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-width="4" stroke="currentColor" stroke-opacity="0.25"></circle><path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor"></path></svg> Sending...';
                 submitBtn.disabled = true;
+                
+                // Re-enable if submission fails (fallback)
+                setTimeout(function() {
+                    if (submitBtn.disabled) {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                }, 10000);
             }
             
             return true;
         });
+        
+        // Add input event listeners to clear error styling
+        const inputs = contactForm.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.style.borderColor = '#ced4da';
+                }
+            });
+        });
     }
 });
 </script>
+
+<style>
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
 
 <?php include 'includes/footer.php'; ?>
